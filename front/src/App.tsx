@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEvents } from "./hooks/useEvents";
 import type { Component } from "./types";
 
@@ -9,8 +9,28 @@ function App() {
     handleMouseMove,
     handleScroll,
     handleKeyPress,
+    eventQueue,
   } = useEvents();
   const ref = useRef<HTMLDivElement>(null);
+
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [_, setMessages] = useState<Array<string>>([]);
+
+  useEffect(() => {
+    const ws = new WebSocket("http://localhost:8080/ws");
+    ws.onmessage = (event) => setMessages((prev) => [...prev, event.data]);
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          type: "join",
+          payload: { roomId: "1236" },
+        }),
+      );
+    };
+    setSocket(ws);
+
+    return () => ws.close();
+  }, []);
 
   useEffect(() => {
     ref.current?.focus();
@@ -19,7 +39,7 @@ function App() {
     () => [
       {
         id: "1",
-        node: <div style={{ backgroundColor: 'white' }}>Hello World</div>,
+        node: <div style={{ backgroundColor: "white" }}>Hello World</div>,
         position: { x: 0, y: 0 },
       },
       {
@@ -35,6 +55,21 @@ function App() {
     ],
     [],
   );
+
+  useEffect(() => {
+    if (eventQueue.length === 0) return;
+    sendMessage(eventQueue[eventQueue.length - 1]?.type);
+  }, [eventQueue]);
+
+  const sendMessage = (message: string) => {
+    if (!socket) return;
+    console.log(message);
+    socket.send(
+      JSON.stringify({
+        message: message,
+      }),
+    );
+  };
 
   return (
     <div

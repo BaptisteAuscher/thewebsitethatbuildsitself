@@ -63,10 +63,7 @@ export function useEvents() {
     drag.lastPosition = position;
     dragRef.current = undefined;
 
-    if (
-      !drag.hasDragged &&
-      getDistance(drag.startPosition, position) <= CLICK_DISTANCE_THRESHOLD
-    ) {
+    if (!drag.hasDragged && getDistance(drag.startPosition, position) <= CLICK_DISTANCE_THRESHOLD) {
       appendEvent({ type: "click", payload: { position: drag.startPosition } });
       return;
     }
@@ -91,13 +88,11 @@ export function useEvents() {
     const position = { x: event.clientX, y: event.clientY };
     drag.lastPosition = position;
 
-    if (getDistance(drag.startPosition, position) <= CLICK_DISTANCE_THRESHOLD)
-      return;
+    if (getDistance(drag.startPosition, position) <= CLICK_DISTANCE_THRESHOLD) return;
 
     drag.hasDragged = true;
 
-    if (event.timeStamp - drag.segmentStartedAt < DRAG_SAMPLE_INTERVAL_MS)
-      return;
+    if (event.timeStamp - drag.segmentStartedAt < DRAG_SAMPLE_INTERVAL_MS) return;
 
     const delta: Position = {
       x: position.x - drag.segmentStartPosition.x,
@@ -128,18 +123,12 @@ export function useEvents() {
     currentScroll.delta += event.deltaY;
     window.clearTimeout(currentScroll.timeoutId);
 
-    if (
-      event.timeStamp - currentScroll.segmentStartedAt >=
-      SCROLL_MAX_SEGMENT_MS
-    ) {
+    if (event.timeStamp - currentScroll.segmentStartedAt >= SCROLL_MAX_SEGMENT_MS) {
       flushScroll();
       return;
     }
 
-    currentScroll.timeoutId = window.setTimeout(
-      flushScroll,
-      SCROLL_IDLE_FLUSH_MS,
-    );
+    currentScroll.timeoutId = window.setTimeout(flushScroll, SCROLL_IDLE_FLUSH_MS);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -162,5 +151,6 @@ export function useEvents() {
     handleMouseMove,
     handleScroll,
     handleKeyPress,
+    eventQueue,
   };
 }
