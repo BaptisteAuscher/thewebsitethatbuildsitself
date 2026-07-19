@@ -11,3 +11,8 @@ The architecture will most likely change but for now I'm implementing the follow
 - I need to figure out a way to parse my *building blocks* components so that it's made available for the AI (through an auto generated yaml file for instance).
 
 The technologies I will use are react with typescript on the front and golang on the backend.
+
+To run :
+```bash
+docker-compose up --build
+```
