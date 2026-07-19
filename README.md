@@ -16,3 +16,4 @@ To run :
 ```bash
 docker-compose up --build
 ```
+and then your app will be on `localhost:5173`
